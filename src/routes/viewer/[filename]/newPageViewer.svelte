@@ -37,7 +37,8 @@
 		canvases.push(canvas0);
 		canvases.push(canvas1);
 		canvasContexts = canvases.map((c) => c.getContext('2d') as CanvasRenderingContext2D);
-		height = Math.round((pdfViewport.height / pdfViewport.width) * width);
+		canvas0.style.width = `${width}px`;
+		canvas0.style.height = `${Math.round((pdfViewport.height / pdfViewport.width) * width)}px`;
 		if (page_number <= INITAL_PAGES_RENDERED) {
 			render_page(width);
 		}
@@ -122,15 +123,13 @@
 	}}
 	on:wheel={onZoom}
 	on:mousemove={onMouse}
-	style="height: {height}px;"
 >
-	<canvas class="canvas" bind:this={canvas0} bind:clientHeight={height} />
-	<canvas class="canvas" bind:this={canvas1} style="visibility: hidden;" />
+	<canvas class="canvas" bind:this={canvas0} bind:clientHeight={height} style="position: static" />
+	<canvas class="canvas" bind:this={canvas1} style="visibility: hidden; position: absolute" />
 </div>
 
 <style>
 	.canvas {
-		position: absolute;
 		top: 0;
 		left: 0;
 		border-radius: 10px;
@@ -140,6 +139,7 @@
 		position: relative;
 		display: block;
 		width: 100%;
+		margin-bottom: 10px;
 	}
 	.wrapper:nth-last-child(1) {
 		margin-bottom: 0;
