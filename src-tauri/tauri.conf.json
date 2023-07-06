@@ -1,0 +1,98 @@
+{
+    "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+    "build": {
+        "beforeBuildCommand": "yarn run build",
+        "beforeDevCommand": "yarn run dev",
+        "devPath": "http://localhost:8080",
+        "distDir": "../build"
+    },
+    "package": {
+        "productName": "clear-docs",
+        "version": "0.0.1"
+    },
+    "tauri": {
+        "allowlist": {
+            "all": false,
+            "shell": {
+                "all": false,
+                "open": true
+            },
+            "dialog": {
+                "all": false,
+                "open": true
+            },
+            "fs": {
+                "all": false,
+                "scope": [
+                    "$HOME/*"
+                ],
+                "readFile": true
+            }
+        },
+        "bundle": {
+            "active": true,
+            "category": "Productivity",
+            "copyright": "",
+            "deb": {
+                "depends": []
+            },
+            "externalBin": [],
+            "icon": [
+                "icons/32x32.png",
+                "icons/128x128.png",
+                "icons/128x128@2x.png",
+                "icons/icon.icns",
+                "icons/icon.ico"
+            ],
+            "identifier": "com.tauri.dev-0.0.1",
+            "longDescription": "",
+            "macOS": {
+                "entitlements": null,
+                "exceptionDomain": "",
+                "frameworks": [],
+                "providerShortName": null,
+                "signingIdentity": null
+            },
+            "resources": [
+                "resources/*"
+            ],
+            "shortDescription": "",
+            "targets": "all",
+            "windows": {
+                "certificateThumbprint": null,
+                "digestAlgorithm": "sha256",
+                "timestampUrl": ""
+            }
+        },
+        "security": {
+            "csp": null
+        },
+        "updater": {
+            "active": false
+        },
+        "windows": [
+            {
+                "fullscreen": false,
+                "resizable": true,
+                "title": "Clear Docs",
+                "height": 600,
+                "width": 800,
+                "transparent": true,
+                "hiddenTitle": true,
+                "decorations": false,
+                "titleBarStyle": "Transparent"
+            }
+        ],
+        "macOSPrivateApi": true,
+        "cli": {
+            "description": "This is the CLI interface for the clean Pdf Reader",
+            "args": [
+                {
+                    "name": "pdf",
+                    "index": 1,
+                    "takesValue": true
+                }
+            ]
+        }
+    }
+}
