@@ -21,6 +21,7 @@ tauri = { version = "1.2.4", features = ["cli", "dialog-open", "fs-read-file", "
 pdfium-render = "0.8.0"
 image = "0.24.6"
 base64 = "0.21.0"
+serde_yaml = "0.9.22"
 
 [features]
 # by default Tauri runs in production mode
