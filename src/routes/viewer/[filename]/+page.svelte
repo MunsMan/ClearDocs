@@ -1,10 +1,14 @@
 <script lang="ts">
+	import { listen } from '@tauri-apps/api/event';
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 	import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api';
 	import * as pdfjs from 'pdfjs-dist';
 	import NewPageViewer from './newPageViewer.svelte';
 	import { readBinaryFile } from '@tauri-apps/api/fs';
+	import { goto } from '$app/navigation';
+	import { keyboard_shortcuts } from '$lib/shortcuts';
+
 	pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 		'pdfjs-dist/build/pdf.worker.js',
 		import.meta.url
@@ -14,6 +18,10 @@
 	let height: number = 0;
 	let lastHeight: number = 0;
 	let pdf: Promise<PDFDocumentProxy> | null;
+
+	listen('open', () => {
+		goto('/');
+	});
 
 	onMount(async () => {
 		console.log(data.filename);
@@ -26,10 +34,12 @@
 			lastHeight = event.currentTarget.innerHeight;
 		}
 	};
+
+	let pages: HTMLDivElement;
 </script>
 
 <div class="container" bind:clientHeight={height}>
-	<div class="scroll">
+	<div class="scroll" bind:this={pages}>
 		{#if pdf}
 			{#await pdf then pdf}
 				{#each [...Array(pdf.numPages).keys()] as page_number}
@@ -43,7 +53,7 @@
 <svelte:window
 	on:resize={onResize}
 	bind:innerHeight={height}
-	on:keypress={(event) => console.log(event)}
+	on:keypress={(event) => keyboard_shortcuts(event, pages)}
 />
 
 <style>
@@ -64,11 +74,6 @@
 		width: 100vw;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
-	}
-
-	.padding {
-		height: 20vh;
-		width: 100%;
 	}
 	::-webkit-scrollbar {
 		width: 0px;

@@ -13,6 +13,9 @@ const config = {
             assets: 'build',
             fallback: 'index.html'
         }),
+        files: {
+            lib: 'src/lib'
+        }
     }
 };
 
