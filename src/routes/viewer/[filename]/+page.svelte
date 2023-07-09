@@ -43,7 +43,11 @@
 		{#if pdf}
 			{#await pdf then pdf}
 				{#each [...Array(pdf.numPages).keys()] as page_number}
-					<NewPageViewer Ppage={pdf.getPage(page_number + 1)} {page_number} />
+					<NewPageViewer
+						Ppage={pdf.getPage(page_number + 1)}
+						{page_number}
+						textLayerRenderer={pdfjs.renderTextLayer}
+					/>
 				{/each}
 			{/await}
 		{/if}
@@ -55,6 +59,8 @@
 	bind:innerHeight={height}
 	on:keypress={(event) => keyboard_shortcuts(event, pages)}
 />
+
+<link rel="stylesheet" href="../../../../node_modules/pdfjs-dist/web/pdf_viewer.css" />
 
 <style>
 	.container {

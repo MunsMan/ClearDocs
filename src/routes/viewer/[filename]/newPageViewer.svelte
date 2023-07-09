@@ -6,6 +6,8 @@
 	import type { Options } from 'svelte-inview';
 	import type { RenderParameters } from 'pdfjs-dist/types/src/display/api';
 	import type { PageViewport } from 'pdfjs-dist/types/src/display/display_utils';
+	import type { renderTextLayer } from 'pdfjs-dist';
+	export let textLayerRenderer: typeof renderTextLayer;
 	export let Ppage: Promise<PDFPageProxy>;
 	export let page_number: number;
 
@@ -26,6 +28,9 @@
 	let isInview: boolean;
 	let offsetX: number = 0;
 	let offsetY: number = 0;
+	let textLayer: HTMLDivElement;
+	let annotationLayer: HTMLDivElement;
+	let scaleFactor: number = 1;
 
 	const options: Options = {
 		rootMargin: '100%'
@@ -60,12 +65,13 @@
 		canvas.width = width * (window.devicePixelRatio || 1);
 		canvas.height =
 			(pdfViewport.height / pdfViewport.width) * width * (window.devicePixelRatio || 1);
+		scaleFactor = (width / pdfViewport.width) * zoom;
 		// Render PDF page into canvas context
 		const transform = [devicePixelRatio, 0, 0, devicePixelRatio, 0, 0];
 		let renderContext: RenderParameters = {
 			canvasContext,
 			viewport: page.getViewport({
-				scale: (width / pdfViewport.width) * zoom,
+				scale: scaleFactor,
 				offsetX: offsetX,
 				offsetY: offsetY
 			}),
@@ -77,6 +83,18 @@
 			canvas.style.visibility = 'visible';
 			canvases[(canvas_num + 1) % 2].style.visibility = 'hidden';
 			renderCanvas = (renderCanvas + 1) % 2;
+			page.getTextContent().then((textContent) => {
+				textLayerRenderer({
+					textContentSource: textContent,
+					container: textLayer,
+					viewport: page.getViewport({
+						scale: scaleFactor,
+						offsetX: offsetX,
+						offsetY: offsetY
+					}),
+					textDivs: []
+				});
+			});
 		});
 	};
 
@@ -126,6 +144,16 @@
 >
 	<canvas class="canvas" bind:this={canvas0} bind:clientHeight={height} style="position: static" />
 	<canvas class="canvas" bind:this={canvas1} style="visibility: hidden; position: absolute" />
+	<div
+		bind:this={textLayer}
+		class="textLayer"
+		style="transform: translate({offsetX}px, {offsetY}px); --scale-factor: {scaleFactor}"
+	/>
+	<div
+		bind:this={annotationLayer}
+		class="annotation-layer"
+		style="transform: translate({offsetX}px, {offsetY}px); --scale-factor: {scaleFactor}"
+	/>
 </div>
 
 <style>
