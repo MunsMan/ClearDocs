@@ -4,7 +4,8 @@
         "beforeBuildCommand": "yarn run build",
         "beforeDevCommand": "yarn run dev",
         "devPath": "http://localhost:8080",
-        "distDir": "../build"
+        "distDir": "../build",
+        "withGlobalTauri": true
     },
     "package": {
         "productName": "clear-docs",

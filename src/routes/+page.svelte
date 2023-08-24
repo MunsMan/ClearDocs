@@ -1,20 +1,6 @@
 <script lang="ts">
-	import { invoke } from '@tauri-apps/api/tauri';
-	import { getMatches } from '@tauri-apps/api/cli';
 	import { goto } from '$app/navigation';
 	import { open as openDialog } from '@tauri-apps/api/dialog';
-
-	getMatches().then(async (matches) => {
-		if (matches.args?.pdf.occurrences === 1) {
-			if (matches.args?.pdf.value) {
-				let filepath = matches.args?.pdf.value.toString();
-				console.log(filepath);
-				if (await invoke<boolean>('pdf_exists', { filepath })) {
-					openFile(filepath);
-				}
-			}
-		}
-	});
 
 	const readFile = async () => {
 		let filename = await openDialog({

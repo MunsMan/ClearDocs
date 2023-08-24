@@ -7,3 +7,5 @@ export const load: PageLoad = async ({ params }) => {
     }
     return { filename: params.filename }
 }
+
+export const prerender = false

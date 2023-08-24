@@ -22,6 +22,7 @@ pdfium-render = "0.8.0"
 image = "0.24.6"
 base64 = "0.21.0"
 serde_yaml = "0.9.22"
+open = "5.0.0"
 
 [features]
 # by default Tauri runs in production mode

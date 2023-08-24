@@ -1,4 +1,4 @@
-use std::path::Path;
+use open;
 use std::{env, sync::Mutex};
 use tauri::{AppHandle, CustomMenuItem, Manager, Menu, MenuItem, Submenu, Window};
 use utils::config::{configured_window, load_base_config, ConfigurationFile};
@@ -10,6 +10,11 @@ struct AppState {
     configuration: ConfigurationFile,
 }
 
+#[derive(Clone, serde::Serialize)]
+struct DocumentEvent {
+    url: String,
+}
+
 impl AppState {}
 
 fn update_url(window: &Window, url: &str) {
@@ -18,16 +23,16 @@ fn update_url(window: &Window, url: &str) {
             "window.location.replace('http://localhost:{}')",
             url
         ))
-        .unwrap();
+        .expect("Unable to change page url");
+}
+
+fn open_document(window: &Window, filename: &str) {
+    update_url(window, format!("viewer/{filename}").as_str())
 }
 
 #[tauri::command]
-fn pdf_exists(filepath: String, app_handle: AppHandle) -> bool {
-    if Path::new(&filepath).exists() {
-        app_handle.fs_scope().allow_file(filepath).unwrap();
-        return true;
-    }
-    return false;
+fn open_external_link(link: String) {
+    open::that(link).unwrap()
 }
 
 fn create_window(
@@ -73,12 +78,17 @@ fn main() {
                         .add_item(CustomMenuItem::new("new".to_string(), "New")),
                 )),
         )
-        .invoke_handler(tauri::generate_handler![pdf_exists])
+        .invoke_handler(tauri::generate_handler![open_external_link])
         .setup(|app| {
+            let window = app.get_window("main").unwrap();
             #[cfg(debug_assertions)] // only include this code on debug builds
             {
-                let window = app.get_window("main").unwrap();
                 window.open_devtools();
+            }
+            if env::args_os().len() == 2 {
+                let file_name = env::args_os().nth(1).unwrap().to_string_lossy().to_string();
+                println!("Filename: {file_name}");
+                open_document(&window, file_name.as_str());
             }
             let configuration = load_base_config();
             let store = Mutex::new(AppState {
